@@ -1,9 +1,13 @@
-# ARDUINO BLINK PROGRAM IN c WITHOUT ARDUINO LIBRARY
-- use as starter template for arduino code without arduino framework
-- build & upload to connected arduino to compile & upload project to chip
-    - run `ls -a /dev/tty.*` to get name of usb port to upload to. must set this as $USBPORT in scripts/bld.sh to upload
-- setup for atmega328p chip
-- from root run `./scripts/bld.sh` to compile & upload
+# brontosaurus led project in c
+## hardware
+- the Makefile uploads to an atmega328p chip on an Arduino nano
+- the brontosaurus circuit has 6 74HC595 shift registers daisy-chained together driving 48 5mm LEDs
+## software
+- the bronto code is written in plain c without the arduino framework to keep it as lightweight as possible
+- avrdude & avr-gcc are required to compile & upload to the arduino
 
-## breadboard example
+## fully built example
 ![image](./z_docs/img/ref.png)
+
+## schematic
+![image](https://github.com/jdetok/bronto-arduino/blob/main/bronto_schematic.jpg?raw=true)
