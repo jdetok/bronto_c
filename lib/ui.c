@@ -101,7 +101,7 @@ uint8_t adc_rgb_pot(uint8_t channel) {
 }
 
 // control sr oe pin (all leds brightness) with OCR0A
-void pwm_init_d6() {
+void oe_pwm_init() {
     DDRD |= 1 << PD6;
 
     // Fast PWM, non-inverting, 8-bit
@@ -110,7 +110,7 @@ void pwm_init_d6() {
 }
 
 // control (r)gb with OCR1A
-void pwm_init_d9d10() {
+void rgb_pwm_init() {
     DDRB |= (1 << PB1) | (1 << PB2);  // set D9 as output (OC1A)
 
     // Fast PWM 8-bit mode, non-inverting

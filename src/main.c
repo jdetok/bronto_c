@@ -36,8 +36,8 @@ int main() {
     adc_init();
 
     // set up pwm for rgb pins
-    pwm_init_d9d10();
-    pwm_init_d11();
+    // pwm_init_d9d10();
+    // pwm_init_d11();
 
     // start timing for pwm
     uint32_t now = 0;

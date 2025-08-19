@@ -6,8 +6,8 @@
 // setup pwm for rgb | red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
 void rgb_pwm(struct rgbLED *rgb) {
     // setup digital outputs
-    DDRB |= (1 << PB1) | (1 << PB2); // d9 d10
-    DDRB |= (1 << PB3); // d11
+    DDRB |= (1 << PB1) | (1 << PB2) | (1 << PB3); // d9 d10 d11
+    // DDRB |= ; // d11
 
     // Timer1 Fast PWM 8-bit, non-inverting
     TCCR1A = (1 << WGM10) | (1 << COM1A1) | (1 << COM1B1);
