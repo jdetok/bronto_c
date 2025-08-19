@@ -53,9 +53,6 @@ void adc_init(void) {
 
     // Enable ADC, prescaler = 128 -> ADC clock = 16 MHz / 128 = 125 kHz
     ADCSRA = (1 << ADEN)  | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
-
-    // (optional) disable digital input buffer on ADC1 to save power
-    DIDR0 |= (1 << ADC1D);
 }
 
 // read analog channel
@@ -114,7 +111,7 @@ void pwm_init_d6() {
 }
 
 // control (r)gb with OCR1A
-void pwm_init_d910() {
+void pwm_init_d9d10() {
     DDRB |= (1 << PB1) | (1 << PB2);  // set D9 as output (OC1A)
 
     // Fast PWM 8-bit mode, non-inverting

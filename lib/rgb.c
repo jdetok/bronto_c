@@ -3,9 +3,9 @@
 #include "rgb.h"
 #include "ui.h"
 
-// setup pwm for rgb
-void rgb_init(struct rgbLED *rgb) {
-    // Set output pins
+// setup pwm for rgb | red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
+void rgb_pwm(struct rgbLED *rgb) {
+    // setup digital outputs
     DDRB |= (1 << PB1) | (1 << PB2); // d9 d10
     DDRB |= (1 << PB3); // d11
 
@@ -13,12 +13,11 @@ void rgb_init(struct rgbLED *rgb) {
     TCCR1A = (1 << WGM10) | (1 << COM1A1) | (1 << COM1B1);
     TCCR1B = (1 << WGM12) | (1 << CS11); // prescaler = 8
 
-    // Timer2 Fast PWM 8-bit, non-inverti
-    
+    // Timer2 Fast PWM 8-bit, non-inverting
     TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1);
     TCCR2B = (1 << CS21); // prescaler = 8
 
-    // Initial values
+    // set startup vals
     rgb->r = 0; rgb->g = 0; rgb->b = 0;
     rgb->dir_r = 1; rgb->dir_g = 1; rgb->dir_b = 1;
     rgb->last_update = 0;
@@ -39,9 +38,6 @@ void on(struct rgbLED rgb) {
     TCCR2A |= (1 << COM2A1); // d11
 }
 
-// RED: OCR1A
-// GRN: OCR1B
-// BLU: OCR2A
 // pulse rgb with pwm
 void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
     // Update only if enough time has passed
