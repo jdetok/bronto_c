@@ -2,39 +2,40 @@
 # ui pins
 ## switches
 - power switch
-    - d5
+    - d5 | PD5
 - sequence/solid mode switch
-    - d3
+    - d3 | PD3
 - "intensity" (intn) switch
-    - d2
-- rgb on switch
-    - a0
-- current unused switch
-    - a5
+    - d2 | PD2
+- rgb on switch 
+    - a0 | PC0
+- reverse bitChaser effect
+    - a5 | PC5
 ## potentiometers
-- brightness pot
-    - a1
-- speed pot
-    - a2
-- intensity pot
-    - a3
-- rgb brightness pot
-    - a4
+- shift register LED brightness pot | bottommost pot
+    - a1 | PC1 | adc chan. 1
+- speed pot | speed for bitChaser effect | second from bottom 
+    - a2 | PC2 | adc chan. 2
+- intensity pot | controls `numSr` value passed to bitChaser | second from top
+    - effectively 'adds' additional visual bits chasing as pot increases
+    - a3 | PC3 | adc chan. 3
+- rgb brightness pot | topmost pot
+    - a4 | PC4 | adc chan. 4
 # 74HC595 shift register pins
-- serial pin
-    - d4
+- serial pin | set a bit in the register
+    - d4 | PD4
 - output enable (oe) pin
-    - d6
+    - d6 | PD6 | OCR0A = x to set shift register LED brightness
     * pwm, controls led brightness
-- clock pin
-    - d7
+- clock pin 
+    - d7 | PD7 | set current bits to register
 - latch pin
-    - d8
+    - d8 | PB0 | output bits in shift register to memory register
 # rgb pins
 ### all three pwm
 - red
-    - d9
+    - d9 | PB1 | OCR1A = x to set (r)gb
 - green
-    - d10
+    - d10 | PB2 | OCR1B = x to set r(g)b
 - blue
-    - d11
+    - d11 | PB3 | OCR2A = x to set rg(b)

@@ -1,11 +1,14 @@
+# installs (mac) necessary to build source & upload
+- should just need avr toolchain to run & upload from command line - no arduino IDE/framework necessary
+- once installed, use the [build documentation](./build.md) to build & uplaod the code to arduino
 # commands to install avr
-`
+```
 brew install avrdude
 brew tap osx-cross/avr
 brew install avr-gcc
-`
+```
 # make c_cpp_properties file for vscode
-- necessary so it recognizes the atmega register names etc
+- necessary so debug recognizes the atmega register names etc
 ```json
 {
     "configurations": [

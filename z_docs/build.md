@@ -6,9 +6,7 @@
 - mumc: make upload && make clean
 
 
-# build commands to manually build project & upload to arduino
-# run ./scripts/bld.sh
-
+## build commands to manually build project & upload to arduino
 ## see usb port:
 `ls /dev/tty.*`
 - should be like `/dev/tty.usbmodem2101`
