@@ -26,7 +26,7 @@ int main() {
     DDRD &= ~ui.pwrSw | ~ui.seqSw | ~ui.intnSw; // d reg input pins
 
     // d6 serial pin on shift register pwm setup for brightness control
-    pwm_init_d6(); 
+    pwm_init_d6();
 
     // setup digital rgb pins - red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
     struct rgbLED rgb;

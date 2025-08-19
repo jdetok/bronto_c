@@ -14,7 +14,10 @@ void delay_ms_var(uint8_t ms) {
 // turn off all lights
 void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on) {
     int numBits = numSr * 8;
-    uint8_t* states = getStates(ui);
+
+    uint8_t states[9];
+    getStates(ui, states);
+    // uint8_t* states = getStates(ui);
     for (int i = 0; i < numBits; i++) {
         // EXIT IF STATE CHANGE DETECTED
         uint8_t interrupt = checkStates(ui, states);
@@ -43,18 +46,20 @@ void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on) {
 // shift in one bit at a time, any number
 void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr) {
     // switch states at start of func
-    uint8_t* states = getStates(ui);
+    // uint8_t* states = getStates(ui);
+    uint8_t states[9];
+    getStates(ui, states);
+
     int numBits = numSr * 8;
 
     // outer loop through number of LEDs
     for (int i = 0; i < numBits; i++) {
-        // read current states & return if change detected
-        uint8_t interrupt = checkStates(ui, states);
-        if (interrupt) {
-            return;
-        } else {
-            OCR0A = adc_read(1); // set brightness
-            for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
+        OCR0A = adc_read(1); // set brightness
+        for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
+            uint8_t interrupt = checkStates(ui, states);
+            if (interrupt) {
+                return;
+            } else {
                 if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
                     PORTD |= sr.ser; // write a 1
                 } else {
@@ -64,18 +69,22 @@ void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr) {
                 PORTB |= sr.clock;
                 PORTB &= ~sr.clock;
             }
-        // pulse latch (load all bits in shift register to memory)
-        PORTD |= sr.latch;
-        PORTD &= ~sr.latch;
-        delay_ms_var(adc_read(2)); // delaytime ms
         }
+    // pulse latch (load all bits in shift register to memory)
+    PORTD |= sr.latch;
+    PORTD &= ~sr.latch;
+    delay_ms_var(adc_read(2)); // delaytime ms
     }
 }
+
 
 // reverse
 void revBitChaser(struct shiftReg sr, struct usrIn ui, int numSr) {
     // switch states at start of func
-    uint8_t* states = getStates(ui);
+    
+    uint8_t states[9];
+    getStates(ui, states);
+
     int numBits = numSr * 8;
 
     for (int i = numBits; i >= 0; i--) {

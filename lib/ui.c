@@ -15,13 +15,14 @@ uint8_t readA5() {
 }
 
 // pass last states array & compare, return a 1 to kill current loop
-uint8_t checkStates(struct usrIn ui, uint8_t lastStates[]) {
-    uint8_t* states = getStates(ui);
+uint8_t checkStates(struct usrIn ui, uint8_t lastStates[9]) {
+    uint8_t states[9];
+    getStates(ui, states);
 
     // handle state change for any switch/pot
     for (int i = 0; i < 9; i++) {
         if (states[i] != lastStates[i]) {
-            // don't return for 
+            // don't return for intn pot changes
             if ((i > 6) && getState(ui.seqSw) && !getState(ui.intnSw)) {
                 continue;
             } 
@@ -30,9 +31,9 @@ uint8_t checkStates(struct usrIn ui, uint8_t lastStates[]) {
     }
     return 0;
 }
-
-uint8_t* getStates(struct usrIn ui) {
-    static uint8_t states[9];
+// pass the array instead so it doesn't have to be static
+void getStates(struct usrIn ui, uint8_t states[9]) {
+    // static uint8_t states[9];
     states[0] = getState(ui.pwrSw);
     states[1] = getState(ui.seqSw);
     states[2] = getState(ui.intnSw);
@@ -41,9 +42,7 @@ uint8_t* getStates(struct usrIn ui) {
     states[5] = readA0(); // rgb on off
     states[6] = readA5(); // rgb other switch
     states[7] = adc_sw(3); // switch to control numsr in intn mode
-    states[8] = adc_sw(4); // switch to control numsr in intn mode
-
-    return states;
+    states[8] = adc_sw(4); // switch to control rgb brightness
 }
 
 // setup analog pins

@@ -20,7 +20,7 @@ uint16_t adc_read(uint8_t channel);
 uint8_t adc_sw(uint8_t channel);
 uint8_t adc_rgb_pot(uint8_t channel);
 uint8_t getState(uint8_t pin);
-uint8_t checkStates(struct usrIn ui, uint8_t lastStates[]);
-uint8_t* getStates(struct usrIn ui);
+uint8_t checkStates(struct usrIn ui, uint8_t lastStates[9]);
+void getStates(struct usrIn ui, uint8_t states[9]);
 
 #endif
