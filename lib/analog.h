@@ -5,7 +5,7 @@
 #include "rgb.h"
 
 void oe_pwm();
-void rgb_pwm(struct rgbLED *rgb);
+void rgb_pwm(rgbLED *rgb);
 void adc_init();
 uint16_t adc_read(uint8_t channel);
 uint8_t adc_sw(uint8_t channel);

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-struct rgbLED {
+typedef struct {
     uint8_t r;
     uint8_t g;
     uint8_t b;
@@ -11,10 +11,10 @@ struct rgbLED {
     int8_t dir_g;
     int8_t dir_b;
     uint32_t last_update; // last time PWM was updated
-};
+} rgbLED;
 
-void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
-void off(struct rgbLED rgb);
-void on(struct rgbLED rgb);
+void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
+void off(rgbLED rgb);
+void on(rgbLED rgb);
 
 #endif

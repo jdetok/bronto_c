@@ -3,7 +3,7 @@
 #include "rgb.h"
 // #include "ui.h"
 
-void off(struct rgbLED rgb) {
+void off(rgbLED rgb) {
     // disconnect from pwm
     TCCR1A &= ~((1 << COM1A1) | (1 << COM1B1)); // d9 d10
     TCCR2A &= ~(1 << COM2A1); // d11
@@ -13,14 +13,14 @@ void off(struct rgbLED rgb) {
 }
 
 // enable pwm
-void on(struct rgbLED rgb) {
+void on(rgbLED rgb) {
     // enable pwm
     TCCR1A |= (1 << COM1A1) | (1 << COM1B1); // d9 d10
     TCCR2A |= (1 << COM2A1); // d11
 }
 
 // pulse rgb with pwm
-void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
+void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
     if (time - rgb->last_update < speed_ms) return;
     rgb->last_update = time;
 

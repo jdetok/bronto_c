@@ -13,7 +13,7 @@ uint8_t getState(uint8_t pin, char reg) {
 }
 
 // pass last states array & compare, return a 1 to kill current loop
-uint8_t checkStates(struct usrIn ui, uint8_t lastStates[7]) {
+uint8_t checkStates(usrIn ui, uint8_t lastStates[7]) {
     uint8_t states[7];
     getStates(ui, states);
 
@@ -30,7 +30,7 @@ uint8_t checkStates(struct usrIn ui, uint8_t lastStates[7]) {
     return 0;
 }
 // pass the array instead so it doesn't have to be static
-void getStates(struct usrIn ui, uint8_t states[7]) {
+void getStates(usrIn ui, uint8_t states[7]) {
     // static uint8_t states[9];
     states[0] = getState(ui.pwrSw, 'd');
     states[1] = getState(ui.seqSw, 'd');

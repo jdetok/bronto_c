@@ -12,7 +12,7 @@ void delay_ms_var(uint8_t ms) {
 }
 
 // turn off all lights
-void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on) {
+void allBits(shiftReg sr, usrIn ui, int numSr, int on) {
     uint8_t states[7];
     int numBits = numSr * 8;
     getStates(ui, states);
@@ -37,7 +37,7 @@ void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on) {
 }
 
 // TODO: new bitchaser accept readA0 output as param forward reverse
-void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr, uint8_t rev) {
+void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev) {
     // current switch & pot states
     uint8_t states[7];
     getStates(ui, states);

@@ -7,30 +7,30 @@
 
 int main() {
     // setup digital pins for shift register
-    struct shiftReg sr = {
-        1 << PD4, // d4 serial pin
-        1 << PD6, // d6 oe pin - also initialized with pwm to control brightness
-        1 << PD7, // d7 latch pin
-        1 << PB0, // d8 clock pin
-    }; // digital pins for switches & pots
-    struct usrIn ui = {
-        1 << PD2, // d2 intensity switch
-        1 << PD3, // d3 on vs seq switch
-        1 << PD5, // d5 power switch
-        1 << PC0, // a0 alt switch - analog pin
-        1 << PC5, // a5 alt switch 2 - analog pin
+    shiftReg sr = {
+        .ser = 1 << PD4, // d4 serial pin
+        .oe = 1 << PD6, // d6 oe pin pwm
+        .latch = 1 << PD7, // d7 latch pin
+        .clock = 1 << PB0, // d8 clock pin
+    }; 
+    // digital pins for switches & pots
+    usrIn ui = {
+        .intnSw = 1 << PD2, // d2 intensity switch
+        .seqSw = 1 << PD3, // d3 on vs seq switch
+        .pwrSw = 1 << PD5, // d5 power switch
+        .revSw = 1 << PC0, // a0 alt switch - analog pin
+        .rgbSw = 1 << PC5, // a5 alt switch 2 - analog pin
     };
     
     // set digital pins as input (&=) or output (|=) 
     DDRD |= sr.ser | sr.oe | sr.latch; // d register output pins
     DDRB |= sr.clock; // b reg output pins
-    // DDRD &= ~ui.pwrSw | ~ui.seqSw | ~ui.intnSw; // d reg input pins
 
     // d6 serial pin on shift register pwm setup for brightness control
     oe_pwm();
 
     // setup digital rgb pins - red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
-    struct rgbLED rgb;
+    rgbLED rgb;
     rgb_pwm(&rgb);
 
     // setup analog pins (ADC0 - ADC5) A0-A5 on arduinos

@@ -9,15 +9,15 @@ extern const uint16_t BIT16;
 extern const uint16_t DTIME;
 
 // struct for shift register
-struct shiftReg {
+typedef struct {
     uint8_t ser;
     uint8_t oe;
     uint8_t latch;
     uint8_t clock;
-};
+} shiftReg;
 
 void delay_ms_var(uint8_t ms);
-void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on); 
-void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr, uint8_t rev);
+void allBits(shiftReg sr, usrIn ui, int numSr, int on); 
+void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev);
 
 #endif
