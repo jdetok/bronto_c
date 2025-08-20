@@ -5,9 +5,6 @@
 #include "ui.h"
 #include "analog.h"
 
-extern const uint16_t BIT16;
-extern const uint16_t DTIME;
-
 // struct for shift register
 typedef struct {
     uint8_t ser;
@@ -16,8 +13,9 @@ typedef struct {
     uint8_t clock;
 } shiftReg;
 
+void shift_init(shiftReg *sr);
 void delay_ms_var(uint8_t ms);
-void allBits(shiftReg *sr, usrIn *ui, int numSr, int on);  
-void bitChaser(shiftReg *sr, usrIn *ui, int numSr, uint8_t rev);
+void allBits(shiftReg *sr, switches *sw, int numSr, int on);  
+void bitChaser(shiftReg *sr, switches *sw, int numSr, uint8_t rev);
 
 #endif

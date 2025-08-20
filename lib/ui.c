@@ -3,6 +3,14 @@
 #include "analog.h"
 #include "ui.h"
 
+void switch_init(switches *sw) {
+    sw->intnSw = 1 << PD2;
+    sw->seqSw = 1 << PD3;
+    sw->pwrSw = 1 << PD5;
+    sw->revSw = 1 << PC0;
+    sw->rgbSw = 1 << PC5;
+}
+
 uint8_t getState(uint8_t pin, char reg) {
    if (reg == 'd') {
         return PIND & pin;    
@@ -13,34 +21,32 @@ uint8_t getState(uint8_t pin, char reg) {
 }
 
 // TODO: new getStates() that accepts a pointer to a states struct & updates it
+// 1770 bytes before implementing
 
+void getSwStates(switches *sw) {
+    sw->states.pwr = getState(sw->pwrSw, 'd');
+    sw->states.seq = getState(sw->seqSw, 'd');
+    sw->states.intn = getState(sw->intnSw, 'd');
+    sw->states.rev = getState(sw->revSw, 'c');
+    sw->states.rgb = getState(sw->rgbSw, 'c');
+}
 
-// pass last states array & compare, return a 1 to kill current loop
-uint8_t checkStates(usrIn *ui, uint8_t lastStates[7]) {
-    uint8_t states[7];
-    getStates(ui, states);
+// sum the states, use in updateStates to determine whether there was a state change
+uint8_t stateSum(switches *sw) {
+    return (
+        sw->states.pwr + sw->states.seq + sw->states.intn + sw->states.rev + sw->states.rgb);
+}
 
-    // handle state change for any switch/pot
-    for (int i = 0; i < 7; i++) {
-        if (states[i] != lastStates[i]) {
-            // don't return for intn pot changes
-            if ((i > 4) && getState(ui->seqSw, 'd') && !getState(ui->intnSw, 'd')) {
-                continue;
-            } 
-            return 1; // return interrupt signal    
-        }
+uint8_t updateStates(switches *sw) {
+    // record state before update
+    uint8_t stSum = stateSum(sw);
+
+    // get current states
+    getSwStates(sw);
+
+    // check if state sum if different after update, return 1 if so
+    if (stSum != stateSum(sw)) {
+        return 1;
     }
     return 0;
 }
-// pass the array instead so it doesn't have to be static
-void getStates(usrIn *ui, uint8_t states[7]) {
-    // static uint8_t states[9];
-    states[0] = getState(ui->pwrSw, 'd');
-    states[1] = getState(ui->seqSw, 'd');
-    states[2] = getState(ui->intnSw, 'd');
-    states[3] = getState(ui->revSw, 'c');
-    states[4] = getState(ui->rgbSw, 'c');
-    states[5] = adc_sw(3); // switch to control numsr in intn mode
-    states[6] = adc_sw(4); // switch to control rgb brightness
-}
-

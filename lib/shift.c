@@ -11,13 +11,18 @@ void delay_ms_var(uint8_t ms) {
     }
 }
 
+void shift_init(shiftReg *sr) {
+    sr->ser = 1 << PD4;
+    sr->oe = 1 << PD6;
+    sr->latch = 1 << PD7;
+    sr->clock = 1 << PB0;
+}
+
 // turn off all lights
-void allBits(shiftReg *sr, usrIn *ui, int numSr, int on) {
-    uint8_t states[7];
+void allBits(shiftReg *sr, switches *sw, int numSr, int on) {
     int numBits = numSr * 8;
-    getStates(ui, states);
     for (int i = 0; i < numBits; i++) {
-        uint8_t interrupt = checkStates(ui, states);
+        uint8_t interrupt = updateStates(sw);
         if (interrupt) {
             return;
         } else {
@@ -37,16 +42,13 @@ void allBits(shiftReg *sr, usrIn *ui, int numSr, int on) {
 }
 
 // TODO: new bitchaser accept readA0 output as param forward reverse
-void bitChaser(shiftReg *sr, usrIn *ui, int numSr, uint8_t rev) {
-    // current switch & pot states
-    uint8_t states[7];
-    getStates(ui, states);
+void bitChaser(shiftReg *sr, switches *sw, int numSr, uint8_t rev) {
     int numBits = numSr * 8;
     if (!rev) {
         // outer loop through number of LEDs
         for (int i = 0; i < numBits; i++) {
             // check that switch states haven't changed, exit if it has
-            uint8_t interrupt = checkStates(ui, states);
+            uint8_t interrupt = updateStates(sw);
             if (interrupt) {
                 return;
             } else {
@@ -72,7 +74,7 @@ void bitChaser(shiftReg *sr, usrIn *ui, int numSr, uint8_t rev) {
     } else { // REVERSE
         for (int i = numBits; i >= 0; i--) {
         // read current states & return if change detected
-            uint8_t interrupt = checkStates(ui, states);
+            uint8_t interrupt = updateStates(sw);
             if (interrupt) {
                 return;
             } else {
