@@ -3,23 +3,15 @@
 #include "../lib/shift.h"
 #include "../lib/ui.h"
 #include "../lib/rgb.h"
-#include "../lib/analog.h"
 
 int main() {
-    // setup digital pins (d4, d6, d7, d8) for shift register
-    shiftReg sr;
-    shift_init(&sr);
-
-    // digital pins for switches & pots
+    // digital pins for switches
     switches sw;
     switch_init(&sw);
 
-    // set digital pins as input (&=) or output (|=) 
-    DDRD |= sr.ser | sr.oe | sr.latch; // d register output pins
-    DDRB |= sr.clock; // b reg output pins
-
-    // d6 serial pin on shift register pwm setup for brightness control
-    oe_pwm();
+    // setup digital pins (d4, d6, d7, d8) for shift register
+    shiftReg sr;
+    shift_init(&sr);
 
     // setup digital rgb pins - red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
     rgbLED rgb;
@@ -44,7 +36,7 @@ int main() {
         // turn on rgb if A5 on
         if (getState(sw.rgbSw, 'c')) {
             rgb_on();
-            pulse(&rgb, now, 1, adc_rgb_pot(4));
+            pulse(&rgb, now, 1, read_rgb_brt(4));
         } else {
             rgb_off();   
         }
@@ -52,7 +44,7 @@ int main() {
         // run bitchaser if second switch is on, else all leds on
         if (getState(sw.seqSw, 'd')) { 
             if (getState(sw.intnSw, 'd')) { // check if intensity switch on
-               bitChaser(&sr, &sw, adc_sw(3), getState(sw.revSw, 'c'));
+               bitChaser(&sr, &sw, read_intn(3), getState(sw.revSw, 'c'));
             } else {
                 bitChaser(&sr, &sw, 6, getState(sw.revSw, 'c'));
             }

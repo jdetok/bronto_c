@@ -2,6 +2,8 @@
 #define UI_H
 
 #include <stdint.h>
+#include <avr/io.h> 
+#include <util/delay.h>
 
 typedef struct {
     uint8_t intnSw; // d2 - intensity
@@ -28,23 +30,11 @@ typedef struct {
     sw_states states;
 } switches;
 
-typedef struct {
-    uint8_t brt; // shift reg led brightness
-    uint8_t spd; // delay speed
-    uint8_t idv; // intn mode bitChaser divider
-    uint8_t rgbrt; // rgb brightness
-} pot_states;
-
-typedef struct {
-    uint8_t brtPot;
-    uint8_t spdPot;
-    uint8_t idvPot;
-    uint8_t rgbrtPot;
-} pots;
-
+void adc_init();
 void switch_init(switches *sw);
-uint8_t getState(uint8_t pin, char reg);
 void getSwStates(switches *sw);
+uint8_t getState(uint8_t pin, char reg);
 uint8_t stateSum(switches *sw);
 uint8_t updateStates(switches *sw);
+uint16_t adc_read(uint8_t channel);
 #endif
