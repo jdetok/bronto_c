@@ -91,6 +91,7 @@ void bitChaser(shiftReg *sr, switches *sw, int numSr, uint8_t rev) {
     if (!rev) {
         // outer loop through number of LEDs
         for (int i = 0; i < numBits; i++) {
+            printf("bit %d/%d\n", i, numBits);
             // check that switch states haven't changed, exit if it has
             uint8_t interrupt = updateStates(sw);
             if (interrupt) {

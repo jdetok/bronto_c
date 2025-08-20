@@ -72,6 +72,7 @@ uint8_t updateStates(switches *sw) {
 
     // check if state sum if different after update, return 1 if so
     if (stSum != stateSum(sw)) {
+        printf("state change detected\n");
         return 1;
     }
     return 0;

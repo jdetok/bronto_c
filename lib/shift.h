@@ -4,10 +4,9 @@
 #include <avr/io.h> 
 #include <util/delay.h>
 #include <stdint.h>
+#include <stdio.h>
 #include "ui.h"
-// #include "analog.h"
 
-// struct for shift register
 typedef struct {
     uint8_t ser;
     uint8_t oe;

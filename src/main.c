@@ -1,8 +1,11 @@
 #include <avr/io.h> 
 #include <util/delay.h>
+#include <stdio.h>
 #include "../lib/shift.h"
 #include "../lib/ui.h"
 #include "../lib/rgb.h"
+#include "../lib/uart.h"
+
 
 int main() {
     // digital pins for switches
@@ -22,6 +25,9 @@ int main() {
 
     // start timing for pwm
     uint32_t now = 0;
+
+    uart_init();
+    printf("firmware uploaded!\n");
 
     // MAIN LOOP
     while (1) {           
