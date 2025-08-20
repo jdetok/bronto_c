@@ -17,7 +17,7 @@ typedef struct {
 } shiftReg;
 
 void delay_ms_var(uint8_t ms);
-void allBits(shiftReg sr, usrIn ui, int numSr, int on); 
-void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev);
+void allBits(shiftReg *sr, usrIn *ui, int numSr, int on);  
+void bitChaser(shiftReg *sr, usrIn *ui, int numSr, uint8_t rev);
 
 #endif

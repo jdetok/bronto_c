@@ -21,7 +21,7 @@ int main() {
         .revSw = 1 << PC0, // a0 alt switch - analog pin
         .rgbSw = 1 << PC5, // a5 alt switch 2 - analog pin
     };
-    
+
     // set digital pins as input (&=) or output (|=) 
     DDRD |= sr.ser | sr.oe | sr.latch; // d register output pins
     DDRB |= sr.clock; // b reg output pins
@@ -44,29 +44,29 @@ int main() {
         now++; // increment timing
 
         if (!getState(ui.pwrSw, 'd')) { // pwrSw off
-            off(rgb); // turn off rgb
-            allBits(sr, ui, 6, 0); // all bits off
+            rgb_off();
+            allBits(&sr, &ui, 6, 0); // all bits off
             continue; // break loop
         }
 
         // turn on rgb if A5 on
         if (getState(ui.rgbSw, 'c')) {
-            on(rgb);
+            rgb_on();
             pulse(&rgb, now, 1, adc_rgb_pot(4));
         } else {
-            off(rgb);   
+            rgb_off();   
         }
         
         // run bitchaser if second switch is on, else all leds on
         if (getState(ui.seqSw, 'd')) { 
             if (getState(ui.intnSw, 'd')) { // check if intensity switch on
-               bitChaser(sr, ui, adc_sw(3), getState(ui.revSw, 'c'));
+               bitChaser(&sr, &ui, adc_sw(3), getState(ui.revSw, 'c'));
             } else {
-                bitChaser(sr, ui, 6, getState(ui.revSw, 'c'));
+                bitChaser(&sr, &ui, 6, getState(ui.revSw, 'c'));
             }
         // sequence off, all lights on
         } else {
-            allBits(sr, ui, 6, 1); // all bits on
+            allBits(&sr, &ui, 6, 1); // all bits on
         }
     }
 }

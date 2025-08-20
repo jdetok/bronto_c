@@ -12,7 +12,7 @@ void delay_ms_var(uint8_t ms) {
 }
 
 // turn off all lights
-void allBits(shiftReg sr, usrIn ui, int numSr, int on) {
+void allBits(shiftReg *sr, usrIn *ui, int numSr, int on) {
     uint8_t states[7];
     int numBits = numSr * 8;
     getStates(ui, states);
@@ -24,20 +24,20 @@ void allBits(shiftReg sr, usrIn ui, int numSr, int on) {
             // all bits on
             OCR0A = adc_read(1); // set brightness
             if (on) {
-                PORTD |= sr.ser;
+                PORTD |= sr->ser;
             } else {
-                PORTD &= ~sr.ser;
+                PORTD &= ~sr->ser;
             }
-            PORTB |= sr.clock;
-            PORTB &= ~sr.clock;
+            PORTB |= sr->clock;
+            PORTB &= ~sr->clock;
         }
     }
-    PORTD |= sr.latch;
-    PORTD &= ~sr.latch;
+    PORTD |= sr->latch;
+    PORTD &= ~sr->latch;
 }
 
 // TODO: new bitchaser accept readA0 output as param forward reverse
-void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev) {
+void bitChaser(shiftReg *sr, usrIn *ui, int numSr, uint8_t rev) {
     // current switch & pot states
     uint8_t states[7];
     getStates(ui, states);
@@ -55,18 +55,18 @@ void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev) {
                 // loop forward
                 for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
                     if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                        PORTD |= sr.ser; // write a 1
+                        PORTD |= sr->ser; // write a 1
                     } else {
-                        PORTD &= ~sr.ser; // write a 0
+                        PORTD &= ~sr->ser; // write a 0
                     }
                     // pulse clock (load individual bit to shift register)
-                    PORTB |= sr.clock;
-                    PORTB &= ~sr.clock;
+                    PORTB |= sr->clock;
+                    PORTB &= ~sr->clock;
                 }
             }
             // pulse latch (load all bits in shift register to memory)
-            PORTD |= sr.latch;
-            PORTD &= ~sr.latch;
+            PORTD |= sr->latch;
+            PORTD &= ~sr->latch;
             delay_ms_var(adc_read(2)); // delaytime ms
         }
     } else { // REVERSE
@@ -79,19 +79,19 @@ void bitChaser(shiftReg sr, usrIn ui, int numSr, uint8_t rev) {
                 OCR0A = adc_read(1); // set brightness
                 for (int b = (numBits - 1); b > 0; b--) { // inner loop through each bit
                     if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                        PORTD |= sr.ser; // write a 1
+                        PORTD |= sr->ser; // write a 1
                     } else {
-                        PORTD &= ~sr.ser; // write a 0
+                        PORTD &= ~sr->ser; // write a 0
                     }
                     // pulse clock (load individual bit to shift register)
-                    PORTB |= sr.clock;
-                    PORTB &= ~sr.clock;
+                    PORTB |= sr->clock;
+                    PORTB &= ~sr->clock;
                 }
             // pulse latch (load all bits in shift register to memory)
             }
                 // pulse latch (load all bits in shift register to memory)
-            PORTD |= sr.latch;
-            PORTD &= ~sr.latch;
+            PORTD |= sr->latch;
+            PORTD &= ~sr->latch;
             delay_ms_var(adc_read(2)); // delaytime ms
         }
     }

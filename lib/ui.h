@@ -12,7 +12,7 @@ typedef struct {
 } usrIn;
 
 uint8_t getState(uint8_t pin, char reg);
-uint8_t checkStates(usrIn ui, uint8_t lastStates[7]);
-void getStates(usrIn ui, uint8_t states[7]);
+uint8_t checkStates(usrIn *ui, uint8_t lastStates[7]);
+void getStates(usrIn *ui, uint8_t states[7]);
 
 #endif

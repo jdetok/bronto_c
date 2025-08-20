@@ -14,7 +14,7 @@ typedef struct {
 } rgbLED;
 
 void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
-void off(rgbLED rgb);
-void on(rgbLED rgb);
+void rgb_off();
+void rgb_on();
 
 #endif

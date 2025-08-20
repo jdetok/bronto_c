@@ -1,9 +1,8 @@
 #include <avr/io.h> 
 #include <util/delay.h>
 #include "rgb.h"
-// #include "ui.h"
 
-void off(rgbLED rgb) {
+void rgb_off() {
     // disconnect from pwm
     TCCR1A &= ~((1 << COM1A1) | (1 << COM1B1)); // d9 d10
     TCCR2A &= ~(1 << COM2A1); // d11
@@ -12,9 +11,8 @@ void off(rgbLED rgb) {
     PORTB &= ~((1 << PB1) | (1 << PB2) | (1 << PB3)); 
 }
 
-// enable pwm
-void on(rgbLED rgb) {
-    // enable pwm
+// enable pwm for digital pins d9/10/11 for the RGB LED
+void rgb_on() {
     TCCR1A |= (1 << COM1A1) | (1 << COM1B1); // d9 d10
     TCCR2A |= (1 << COM2A1); // d11
 }
