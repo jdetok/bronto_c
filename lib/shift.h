@@ -4,7 +4,6 @@
 #include <avr/io.h> 
 #include <util/delay.h>
 #include <stdint.h>
-#include <stdio.h>
 #include "ui.h"
 
 typedef struct {
