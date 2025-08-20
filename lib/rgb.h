@@ -12,7 +12,6 @@ struct rgbLED {
     int8_t dir_b;
     uint32_t last_update; // last time PWM was updated
 };
-void rgb_pwm(struct rgbLED *rgb);
 
 void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
 void off(struct rgbLED rgb);

@@ -1,27 +1,8 @@
 #include <avr/io.h> 
 #include <util/delay.h>
 #include "rgb.h"
-#include "ui.h"
+// #include "ui.h"
 
-// setup pwm for rgb | red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
-void rgb_pwm(struct rgbLED *rgb) {
-    // setup digital outputs
-    DDRB |= (1 << PB1) | (1 << PB2) | (1 << PB3); // d9 d10 d11
-    // DDRB |= ; // d11
-
-    // Timer1 Fast PWM 8-bit, non-inverting
-    TCCR1A = (1 << WGM10) | (1 << COM1A1) | (1 << COM1B1);
-    TCCR1B = (1 << WGM12) | (1 << CS11); // prescaler = 8
-
-    // Timer2 Fast PWM 8-bit, non-inverting
-    TCCR2A = (1 << WGM20) | (1 << WGM21) | (1 << COM2A1);
-    TCCR2B = (1 << CS21); // prescaler = 8
-
-    // set startup vals
-    rgb->r = 0; rgb->g = 0; rgb->b = 0;
-    rgb->dir_r = 1; rgb->dir_g = 1; rgb->dir_b = 1;
-    rgb->last_update = 0;
-}
 void off(struct rgbLED rgb) {
     // disconnect from pwm
     TCCR1A &= ~((1 << COM1A1) | (1 << COM1B1)); // d9 d10
@@ -41,9 +22,9 @@ void on(struct rgbLED rgb) {
 // pulse rgb with pwm
 void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
     // Update only if enough time has passed
-    if (speed_ms == 1) {
+    // if (speed_ms == 1) {
         
-    }
+    // }
     if (time - rgb->last_update < speed_ms) return;
     rgb->last_update = time;
 

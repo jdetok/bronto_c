@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "ui.h"
+#include "analog.h"
 
 extern const uint16_t BIT16;
 extern const uint16_t DTIME;

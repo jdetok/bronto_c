@@ -3,6 +3,7 @@
 #include "../lib/shift.h"
 #include "../lib/ui.h"
 #include "../lib/rgb.h"
+#include "../lib/analog.h"
 
 int main() {
     // setup digital pins for shift register
@@ -26,7 +27,7 @@ int main() {
     DDRD &= ~ui.pwrSw | ~ui.seqSw | ~ui.intnSw; // d reg input pins
 
     // d6 serial pin on shift register pwm setup for brightness control
-    pwm_init_d6();
+    oe_pwm();
 
     // setup digital rgb pins - red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
     struct rgbLED rgb;
@@ -34,10 +35,6 @@ int main() {
 
     // setup analog pins (ADC0 - ADC5) A0-A5 on arduinos
     adc_init();
-
-    // set up pwm for rgb pins
-    // pwm_init_d9d10();
-    // pwm_init_d11();
 
     // start timing for pwm
     uint32_t now = 0;
