@@ -23,7 +23,7 @@ void rgb_pwm(struct rgbLED *rgb) {
 }
 
 // setup analog pins
-void adc_init(void) {
+void adc_init() {
     // Reference = AVcc (5V) with external capacitor at AREF
     ADMUX = (1 << REFS0);
 
