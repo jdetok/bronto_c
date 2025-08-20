@@ -21,7 +21,7 @@ int main() {
     rgb_pwm(&rgb);
 
     // setup analog pins (ADC0 - ADC5) A0-A5 on arduinos
-    adc_init();
+    pot_init();
 
     // start timing for pwm
     uint32_t now = 0;
@@ -30,30 +30,30 @@ int main() {
     while (1) {           
         now++; // increment timing
 
-        if (!getState(sw.pwrSw, 'd')) { // pwrSw off
+        if (!get_state(sw.pwr_sw, 'd')) { // pwr_sw off
             rgb_off();
-            allBits(&sr, &sw, 6, 0); // all bits off
+            onoff(&sr, &sw, 6, 0); // all bits off
             continue; // break loop
         }
 
         // turn on rgb if A5 on
-        if (getState(sw.rgbSw, 'c')) {
+        if (get_state(sw.rgb_sw, 'c')) {
             rgb_on();
             pulse(&rgb, now, 1, read_rgb_brt(4));
         } else {
             rgb_off();   
         }
         
-        // run bitchaser if second switch is on, else all leds on
-        if (getState(sw.seqSw, 'd')) { 
-            if (getState(sw.intnSw, 'd')) { // check if intensity switch on
-               bitChaser(&sr, &sw, read_intn(3), getState(sw.revSw, 'c'));
+        // run chaser if second switch is on, else all leds on
+        if (get_state(sw.seq_sw, 'd')) { 
+            if (get_state(sw.intn_sw, 'd')) { // check if intensity switch on
+               chaser(&sr, &sw, read_intn(3), get_state(sw.rev_sw, 'c'));
             } else {
-                bitChaser(&sr, &sw, 6, getState(sw.revSw, 'c'));
+                chaser(&sr, &sw, 6, get_state(sw.rev_sw, 'c'));
             }
         // sequence off, all lights on
         } else {
-            allBits(&sr, &sw, 6, 1); // all bits on
+            onoff(&sr, &sw, 6, 1); // all bits on
         }
     }
 }

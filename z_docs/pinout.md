@@ -9,14 +9,14 @@
     - d2 | PD2
 - rgb on switch 
     - a0 | PC0
-- reverse bitChaser effect
+- reverse chaser effect
     - a5 | PC5
 ## potentiometers
 - shift register LED brightness pot | bottommost pot
     - a1 | PC1 | adc chan. 1
-- speed pot | speed for bitChaser effect | second from bottom 
+- speed pot | speed for chaser effect | second from bottom 
     - a2 | PC2 | adc chan. 2
-- intensity pot | controls `numSr` value passed to bitChaser | second from top
+- intensity pot | controls `num_sr` value passed to chaser | second from top
     - effectively 'adds' additional visual bits chasing as pot increases
     - a3 | PC3 | adc chan. 3
 - rgb brightness pot | topmost pot

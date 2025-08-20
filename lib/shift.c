@@ -10,7 +10,7 @@ void delay_ms_var(uint8_t ms) {
 
 // delay
 void del() {
-    delay_ms_var(adc_read(2)); // delaytime ms
+    delay_ms_var(read_pot(2)); // delaytime ms
 }
 
 void shift_init(shiftReg *sr) {
@@ -27,9 +27,9 @@ void shift_init(shiftReg *sr) {
     oe_pwm(); // setup pwm channel for oe pin to control brightness
 }
 
-// read intensity switch, return value will be numSr value in bitChaser
+// read intensity switch, return value will be num_sr value in chaser
 uint8_t read_intn(uint8_t channel) {
-    uint16_t val = adc_read(channel);
+    uint16_t val = read_pot(channel);
     if (val < 50) {
         return 1;
     } else if (val < 150) {
@@ -48,17 +48,17 @@ void oe_pwm() {
 
 // set brightness for leds as analog reading of pin A1 
 void set_brt() {
-    OCR0A = adc_read(1); // set brightness
+    OCR0A = read_pot(1); // set brightness
 }
 
 // 0 for clock, 1 for latch
-void srPulse(shiftReg *sr, uint8_t srPin) {
-    switch (srPin) {
-        case 0:
+void pulse_pin(shiftReg *sr, uint8_t clk_latch) {
+    switch (clk_latch) {
+        case 0: // clock pin
             PORTB |= sr->clock;
             PORTB &= ~sr->clock;
             break;
-        case 1:
+        case 1: // latch pin
             PORTD |= sr->latch;
             PORTD &= ~sr->latch;
             break;
@@ -66,10 +66,10 @@ void srPulse(shiftReg *sr, uint8_t srPin) {
 }
 
 // turn off all lights
-void allBits(shiftReg *sr, switches *sw, int numSr, int on) {
-    int numBits = numSr * 8;
-    for (int i = 0; i < numBits; i++) {
-        uint8_t interrupt = updateStates(sw);
+void onoff(shiftReg *sr, switches *sw, int num_sr, int on) {
+    int bits = num_sr * 8;
+    for (int i = 0; i < bits; i++) {
+        uint8_t interrupt = update_states(sw);
         if (interrupt) {
             return;
         } else {
@@ -79,55 +79,55 @@ void allBits(shiftReg *sr, switches *sw, int numSr, int on) {
             } else {
                 PORTD &= ~sr->ser;
             }
-            srPulse(sr, 0); // pulse clock
+            pulse_pin(sr, 0); // pulse clock
         }
     }
-    srPulse(sr, 1); // pulse latch
+    pulse_pin(sr, 1); // pulse latch
 }
 
-// TODO: new bitchaser accept readA0 output as param forward reverse
-void bitChaser(shiftReg *sr, switches *sw, int numSr, uint8_t rev) {
-    int numBits = numSr * 8;
+// TODO: new chaser accept readA0 output as param forward reverse
+void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
+    int bits = num_sr * 8;
     if (!rev) {
         // outer loop through number of LEDs
-        for (int i = 0; i < numBits; i++) {
+        for (int i = 0; i < bits; i++) {
             // check that switch states haven't changed, exit if it has
-            uint8_t interrupt = updateStates(sw);
+            uint8_t interrupt = update_states(sw);
             if (interrupt) {
                 return;
             } else {
                 set_brt(); // set brightness
                 // loop forward
-                for (int b = (numBits - 1); b >= 0; b--) {
+                for (int b = (bits - 1); b >= 0; b--) {
                     if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
                         PORTD |= sr->ser; // write a 1
                     } else {
                         PORTD &= ~sr->ser; // write a 0
                     }
-                    srPulse(sr, 0); // shift clock
+                    pulse_pin(sr, 0); // shift clock
                 }
             }
-            srPulse(sr, 1); // shift latchs
+            pulse_pin(sr, 1); // shift latchs
             del(); // delay
         }
     } else { // REVERSE
-        for (int i = numBits; i >= 0; i--) {
+        for (int i = bits; i >= 0; i--) {
         // read current states & return if change detected
-            uint8_t interrupt = updateStates(sw);
+            uint8_t interrupt = update_states(sw);
             if (interrupt) {
                 return;
             } else {
                 set_brt(); // set brightness
-                for (int b = (numBits - 1); b > 0; b--) {
+                for (int b = (bits - 1); b > 0; b--) {
                     if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
                         PORTD |= sr->ser; // write a 1
                     } else {
                         PORTD &= ~sr->ser; // write a 0
                     }
-                    srPulse(sr, 0); // pulse clock
+                    pulse_pin(sr, 0); // pulse clock
                 }
             }
-            srPulse(sr, 1); // pulse latch
+            pulse_pin(sr, 1); // pulse latch
             del(); // delay
         }
     }

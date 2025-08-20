@@ -22,7 +22,7 @@ void rgb_pwm(rgbLED *rgb) {
 
 // passed as brt to rgb pulse() function (divide pin read by val)
 uint8_t read_rgb_brt(uint8_t channel) {
-    uint16_t val = adc_read(channel);
+    uint16_t val = read_pot(channel);
     if (val < 50) {
         return 2;
     } else if (val < 100) {
