@@ -17,8 +17,7 @@ struct shiftReg {
 };
 
 void delay_ms_var(uint8_t ms);
-void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int onOff); 
-void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr);
-void revBitChaser(struct shiftReg sr, struct usrIn ui, int numSr);
+void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on); 
+void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr, uint8_t rev);
 
 #endif

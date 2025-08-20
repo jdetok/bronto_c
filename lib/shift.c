@@ -13,101 +13,86 @@ void delay_ms_var(uint8_t ms) {
 
 // turn off all lights
 void allBits(struct shiftReg sr, struct usrIn ui, int numSr, int on) {
+    uint8_t states[7];
     int numBits = numSr * 8;
-
-    uint8_t states[9];
     getStates(ui, states);
-    // uint8_t* states = getStates(ui);
     for (int i = 0; i < numBits; i++) {
-        // EXIT IF STATE CHANGE DETECTED
         uint8_t interrupt = checkStates(ui, states);
         if (interrupt) {
             return;
         } else {
-            // ALL BITS ON IF on > 0, ALL OFF OTHERWISE
+            // all bits on
             OCR0A = adc_read(1); // set brightness
             if (on) {
-                PORTD |= sr.ser; // write a 1
+                PORTD |= sr.ser;
             } else {
-                PORTD &= ~sr.ser; // write a 0
+                PORTD &= ~sr.ser;
             }
-
-            // PULSE CLOCK, WRITE BIT TO SHIFT REGISTER
             PORTB |= sr.clock;
             PORTB &= ~sr.clock;
         }
-        _delay_ms(1);
     }
-    // WRITE ALL BITS TO MEMORY
     PORTD |= sr.latch;
     PORTD &= ~sr.latch;
 }
 
-// shift in one bit at a time, any number
-void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr) {
-    // switch states at start of func
-    // uint8_t* states = getStates(ui);
-    uint8_t states[9];
+// TODO: new bitchaser accept readA0 output as param forward reverse
+void bitChaser(struct shiftReg sr, struct usrIn ui, int numSr, uint8_t rev) {
+    // current switch & pot states
+    uint8_t states[7];
     getStates(ui, states);
-
     int numBits = numSr * 8;
-
-    // outer loop through number of LEDs
-    for (int i = 0; i < numBits; i++) {
-        OCR0A = adc_read(1); // set brightness
-        for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
+    if (!rev) {
+        // outer loop through number of LEDs
+        for (int i = 0; i < numBits; i++) {
+            // check that switch states haven't changed, exit if it has
             uint8_t interrupt = checkStates(ui, states);
             if (interrupt) {
                 return;
             } else {
-                if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                    PORTD |= sr.ser; // write a 1
-                } else {
-                    PORTD &= ~sr.ser; // write a 0
+                // set brightness for each bit
+                OCR0A = adc_read(1); // set brightness
+                // loop forward
+                for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
+                    if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
+                        PORTD |= sr.ser; // write a 1
+                    } else {
+                        PORTD &= ~sr.ser; // write a 0
+                    }
+                    // pulse clock (load individual bit to shift register)
+                    PORTB |= sr.clock;
+                    PORTB &= ~sr.clock;
                 }
-                // pulse clock (load individual bit to shift register)
-                PORTB |= sr.clock;
-                PORTB &= ~sr.clock;
             }
+            // pulse latch (load all bits in shift register to memory)
+            PORTD |= sr.latch;
+            PORTD &= ~sr.latch;
+            delay_ms_var(adc_read(2)); // delaytime ms
         }
-    // pulse latch (load all bits in shift register to memory)
-    PORTD |= sr.latch;
-    PORTD &= ~sr.latch;
-    delay_ms_var(adc_read(2)); // delaytime ms
-    }
-}
-
-
-// reverse
-void revBitChaser(struct shiftReg sr, struct usrIn ui, int numSr) {
-    // switch states at start of func
-    
-    uint8_t states[9];
-    getStates(ui, states);
-
-    int numBits = numSr * 8;
-
-    for (int i = numBits; i >= 0; i--) {
+    } else { // REVERSE
+        for (int i = numBits; i >= 0; i--) {
         // read current states & return if change detected
-        uint8_t interrupt = checkStates(ui, states);
-        if (interrupt) {
-            return;
-        } else {
-            OCR0A = adc_read(1); // set brightness
-            for (int b = (numBits - 1); b >= 0; b--) { // inner loop through each bit
-                if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                    PORTD |= sr.ser; // write a 1
-                } else {
-                    PORTD &= ~sr.ser; // write a 0
+            uint8_t interrupt = checkStates(ui, states);
+            if (interrupt) {
+                return;
+            } else {
+                OCR0A = adc_read(1); // set brightness
+                for (int b = (numBits - 1); b > 0; b--) { // inner loop through each bit
+                    if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
+                        PORTD |= sr.ser; // write a 1
+                    } else {
+                        PORTD &= ~sr.ser; // write a 0
+                    }
+                    // pulse clock (load individual bit to shift register)
+                    PORTB |= sr.clock;
+                    PORTB &= ~sr.clock;
                 }
-                // pulse clock (load individual bit to shift register)
-                PORTB |= sr.clock;
-                PORTB &= ~sr.clock;
+            // pulse latch (load all bits in shift register to memory)
             }
-        // pulse latch (load all bits in shift register to memory)
-        PORTD |= sr.latch;
-        PORTD &= ~sr.latch;
-        delay_ms_var(adc_read(2)); // delaytime ms
+                // pulse latch (load all bits in shift register to memory)
+            PORTD |= sr.latch;
+            PORTD &= ~sr.latch;
+            delay_ms_var(adc_read(2)); // delaytime ms
         }
     }
 }

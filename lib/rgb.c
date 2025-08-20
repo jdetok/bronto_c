@@ -21,10 +21,6 @@ void on(struct rgbLED rgb) {
 
 // pulse rgb with pwm
 void pulse(struct rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
-    // Update only if enough time has passed
-    // if (speed_ms == 1) {
-        
-    // }
     if (time - rgb->last_update < speed_ms) return;
     rgb->last_update = time;
 

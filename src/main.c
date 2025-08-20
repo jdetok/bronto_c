@@ -24,7 +24,7 @@ int main() {
     // set digital pins as input (&=) or output (|=) 
     DDRD |= sr.ser | sr.oe | sr.latch; // d register output pins
     DDRB |= sr.clock; // b reg output pins
-    DDRD &= ~ui.pwrSw | ~ui.seqSw | ~ui.intnSw; // d reg input pins
+    // DDRD &= ~ui.pwrSw | ~ui.seqSw | ~ui.intnSw; // d reg input pins
 
     // d6 serial pin on shift register pwm setup for brightness control
     oe_pwm();
@@ -43,14 +43,14 @@ int main() {
     while (1) {           
         now++; // increment timing
 
-        if (!getState(ui.pwrSw)) { // pwrSw off
+        if (!getState(ui.pwrSw, 'd')) { // pwrSw off
             off(rgb); // turn off rgb
             allBits(sr, ui, 6, 0); // all bits off
             continue; // break loop
         }
 
-        // turn on rgb if A0 on
-        if (readA5()) {
+        // turn on rgb if A5 on
+        if (getState(ui.rgbSw, 'c')) {
             on(rgb);
             pulse(&rgb, now, 1, adc_rgb_pot(4));
         } else {
@@ -58,19 +58,11 @@ int main() {
         }
         
         // run bitchaser if second switch is on, else all leds on
-        if (getState(ui.seqSw)) { 
-            if (getState(ui.intnSw)) { // check if intensity switch on
-                if (readA0()) {
-                    revBitChaser(sr, ui, adc_sw(3));
-                }
-                bitChaser(sr, ui, adc_sw(3)); // changes divider with a3 pot
+        if (getState(ui.seqSw, 'd')) { 
+            if (getState(ui.intnSw, 'd')) { // check if intensity switch on
+               bitChaser(sr, ui, adc_sw(3), getState(ui.revSw, 'c'));
             } else {
-                if (readA0()) {
-                    revBitChaser(sr, ui, 6);
-                } else {
-                    bitChaser(sr, ui, 6); // single light on at a time
-                }
-                
+                bitChaser(sr, ui, 6, getState(ui.revSw, 'c'));
             }
         // sequence off, all lights on
         } else {
