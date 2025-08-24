@@ -6,6 +6,12 @@
 #include <stdint.h>
 #include "ui.h"
 
+// digital pins for shift register
+#define SER (1 << PD4)
+#define OE (1 << PD6)
+#define LATCH (1 << PD7)
+#define CLOCK (1 << PB0)
+
 typedef struct {
     uint8_t ser;
     uint8_t oe;

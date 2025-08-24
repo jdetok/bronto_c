@@ -15,10 +15,10 @@ void del() {
 
 void shift_init(shiftReg *sr) {
     // set pins to the appropriate bit on the register
-    sr->ser = 1 << PD4;
-    sr->oe = 1 << PD6;
-    sr->latch = 1 << PD7;
-    sr->clock = 1 << PB0;
+    sr->ser = SER;
+    sr->oe = OE;
+    sr->latch = LATCH;
+    sr->clock = CLOCK;
 
     // setup pins as output on their appropriate register
     DDRD |= sr->ser | sr->oe | sr->latch;
@@ -86,51 +86,38 @@ void onoff(shiftReg *sr, switches *sw, int num_sr, int on) {
     pulse_pin(sr, 1); // pulse latch
 }
 
-// TODO: new chaser accept readA0 output as param forward reverse
 void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
-    int bits = num_sr * 8;
+    uint8_t bits = num_sr * 8;
+    uint8_t start, end, step;
+
     if (!rev) {
-        // outer loop through number of LEDs
-        for (int i = 0; i < bits; i++) {
-            uint8_t interrupt = check_state(sw);
-            if (interrupt) {
-                return; // return if state changed
-            } else {
-                set_brt(); // set brightness
-                // loop forward
-                for (int b = (bits - 1); b >= 0; b--) {
-                    if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                        PORTD |= sr->ser; // write a 1
-                    } else {
-                        PORTD &= ~sr->ser; // write a 0
-                    }
-                    pulse_pin(sr, 0); // shift clock
+        start = 0;
+        end = bits;
+        step = 1;
+    } else {
+        start = (bits - 1);
+        end = -1;
+        step = -1;
+    }
+    
+    for (uint8_t i = start; i != end; i += step) {
+        uint8_t interrupt = check_state(sw);
+        if (interrupt) {
+            return; // return if state changed
+        } else {
+            set_brt(); // set brightness
+            // loop forward
+            for (int b = (bits - 1); b >= 0; b--) {
+                if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
+                    PORTD |= sr->ser; // write a 1
+                } else {
+                    PORTD &= ~sr->ser; // write a 0
                 }
+                pulse_pin(sr, 0); // shift clock
             }
-            pulse_pin(sr, 1); // shift latchs
-            del(); // delay
         }
-    } else { // REVERSE
-        for (int i = bits; i >= 0; i--) {
-        // read current states & return if change detected
-            // uint8_t interrupt = update_states(sw);
-            uint8_t interrupt = check_state(sw);
-            if (interrupt) {
-                return;
-            } else {
-                set_brt(); // set brightness
-                for (int b = (bits - 1); b > 0; b--) {
-                    if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                        PORTD |= sr->ser; // write a 1
-                    } else {
-                        PORTD &= ~sr->ser; // write a 0
-                    }
-                    pulse_pin(sr, 0); // pulse clock
-                }
-            }
-            pulse_pin(sr, 1); // pulse latch
-            del(); // delay
-        }
+        pulse_pin(sr, 1); // shift latch
+        del(); // delay
     }
 }
 
@@ -139,13 +126,11 @@ void byte_chaser(shiftReg *sr, switches *sw, int num_sr) {
     // outer loop through number of shift registers
     for (int i = 0; i < num_sr; i++) {
         // check that switch states haven't changed, exit if it has
-        // uint8_t interrupt = update_states(sw);
         uint8_t interrupt = check_state(sw);
         if (interrupt) {
             return;
         } else {
             set_brt(); // set brightness
-            // loop through 56 bits, use i to figure out which 8 to light
             for (int b = bits - 1; b >= 0; b--) {
                 if (b / 8 == i) {
                     PORTD |= sr->ser; // write a 1
