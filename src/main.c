@@ -47,6 +47,7 @@ int main() {
         // run chaser if second switch is on, else all leds on
         if (get_state(sw.seq_sw, 'd')) { 
             if (get_state(sw.intn_sw, 'd')) { // check if intensity switch on
+                // byte_chaser(&sr, &sw, 6);
                chaser(&sr, &sw, read_intn(3), get_state(sw.rev_sw, 'c'));
             } else {
                 chaser(&sr, &sw, 6, get_state(sw.rev_sw, 'c'));

@@ -21,6 +21,7 @@ void shift_init(shiftReg *sr);
 void delay_ms_var(uint8_t ms);
 void onoff(shiftReg *sr, switches *sw, int num_sr, int on);  
 void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev);
+void byte_chaser(shiftReg *sr, switches *sw, int num_sr);
 uint8_t read_intn(uint8_t channel);
 
 #endif

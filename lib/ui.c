@@ -1,5 +1,8 @@
 #include "ui.h"
 
+// TODO: use bit fields for states rather than full bytes
+// 1724 before
+
 // setup digital pins (& analog A0 A5) for switches
 void switch_init(switches *sw) {
     sw->intn_sw = 1 << PD2;

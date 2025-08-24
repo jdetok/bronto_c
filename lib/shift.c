@@ -132,3 +132,28 @@ void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
         }
     }
 }
+
+void byte_chaser(shiftReg *sr, switches *sw, int num_sr) {
+    uint8_t bits = num_sr * 8;
+    // outer loop through number of shift registers
+    for (int i = 0; i < num_sr; i++) {
+        // check that switch states haven't changed, exit if it has
+        uint8_t interrupt = update_states(sw);
+        if (interrupt) {
+            return;
+        } else {
+            set_brt(); // set brightness
+            // loop through 56 bits, use i to figure out which 8 to light
+            for (int b = bits - 1; b >= 0; b--) {
+                if (b / 8 == i) {
+                    PORTD |= sr->ser; // write a 1
+                } else {
+                    PORTD &= ~sr->ser; // write a 0
+                }
+                pulse_pin(sr, 0); // shift clock
+            }
+        }
+        pulse_pin(sr, 1); // shift latchs
+        del(); // delay
+    }
+}
