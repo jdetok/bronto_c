@@ -30,31 +30,34 @@ int main() {
     while (1) {           
         now++; // increment timing
 
-        if (!get_state(sw.pwr_sw, 'd')) { // pwr_sw off
+        // if (!get_state(sw.pwr_sw, 'd')) { // pwr_sw off
+        if (!switch_state(&sw, SW_PWR)) { // pwr_sw off
             rgb_off();
             onoff(&sr, &sw, 6, 0); // all bits off
             continue; // break loop
         }
 
-        // turn on rgb if A5 on
-        if (get_state(sw.rgb_sw, 'c')) {
+        if (switch_state(&sw, SW_RGB)) { // rgb switch
             rgb_on();
             pulse(&rgb, now, 1, read_rgb_brt(4));
         } else {
             rgb_off();   
         }
         
-        // run chaser if second switch is on, else all leds on
-        if (get_state(sw.seq_sw, 'd')) { 
-            if (get_state(sw.intn_sw, 'd')) { // check if intensity switch on
+        if (switch_state(&sw, SW_MOD)) { // mode switch 
+            if (switch_state(&sw, SW_DIV)) { // div switch        
                 // byte_chaser(&sr, &sw, 6);
-               chaser(&sr, &sw, read_intn(3), get_state(sw.rev_sw, 'c'));
+               chaser(&sr, &sw, read_intn(3), switch_state(&sw, SW_REV));
             } else {
-                chaser(&sr, &sw, 6, get_state(sw.rev_sw, 'c'));
-            }
+                chaser(&sr, &sw, 6, switch_state(&sw, SW_REV));
+            } 
         // sequence off, all lights on
         } else {
             onoff(&sr, &sw, 6, 1); // all bits on
         }
     }
 }
+
+            // if (get_state(sw.div_sw, 'c')) { // check if intensity switch on
+// chaser(&sr, &sw, 6, get_state(sw.rev_sw, 'd'));//;
+        // if (get_state(sw.mod_sw, 'd')) { 

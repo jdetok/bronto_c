@@ -1,15 +1,53 @@
 #include "ui.h"
 
-// TODO: use bit fields for states rather than full bytes
-// 1724 before
-
 // setup digital pins (& analog A0 A5) for switches
 void switch_init(switches *sw) {
-    sw->intn_sw = 1 << PD2;
-    sw->seq_sw = 1 << PD3;
-    sw->pwr_sw = 1 << PD5;
-    sw->rev_sw = 1 << PC0;
-    sw->rgb_sw = 1 << PC5;
+    *sw = (switches){
+        .switches = {
+            {.pin = PWR_SW, .bit = PWR_BIT, .reg = 'd'},
+            {.pin = MOD_SW, .bit = MOD_BIT, .reg = 'd'},
+            {.pin = REV_SW, .bit = REV_BIT, .reg = 'd'},
+            {.pin = DIV_SW, .bit = DIV_BIT, .reg = 'c'},
+            {.pin = RGB_SW, .bit = RGB_BIT, .reg = 'c'},
+        },
+        .state = 0
+    };
+}
+
+// check if bit for pin is set in state
+uint8_t switch_state(switches *sw, switch_id id) {
+    if (id >= SW_COUNT) return 0;
+    return (sw->state & sw->switches[id].bit) ? 1 : 0;          
+}
+
+void set_state(uint8_t *state, uint8_t pin, char reg, uint8_t bit) {
+    uint8_t val = 0;
+    
+    // PINC register for c, PIND register for d
+    if (reg == 'c') {
+        val = PIN_STATE(PINC, pin);
+    } else if (reg == 'd') {
+        val = PIN_STATE(PIND, pin);
+    }
+    
+    // update state with val
+    if (val) {
+        *state |= bit;
+    } else {
+        *state &= ~bit;
+    }
+}
+
+uint8_t check_state(switches *sw) {
+    uint8_t cur_state = sw->state;
+
+    for (switch_id i = 0; i < SW_COUNT; i++) {
+        set_state(&sw->state, sw->switches[i].pin,
+            sw->switches[i].reg,
+            sw->switches[i].bit);
+    }
+
+    return (sw->state != cur_state) ? 1 : 0;
 }
 
 // setup analog pins
@@ -38,44 +76,4 @@ uint16_t read_pot(uint8_t channel) {
         return 254;
     }
     return val;  // 10-bit result (0–1023)
-}
-
-uint8_t get_state(uint8_t pin, char reg) {
-   if (reg == 'd') {
-        return PIND & pin;    
-   }
-   if (reg == 'c') {
-    return PINC & pin;
-   }
-}
-
-// TODO: new get_states() that accepts a pointer to a states struct & updates it
-// 1770 bytes before implementing
-
-void current_states(switches *sw) {
-    sw->states.pwr = get_state(sw->pwr_sw, 'd');
-    sw->states.seq = get_state(sw->seq_sw, 'd');
-    sw->states.intn = get_state(sw->intn_sw, 'd');
-    sw->states.rev = get_state(sw->rev_sw, 'c');
-    sw->states.rgb = get_state(sw->rgb_sw, 'c');
-}
-
-// sum the states, use in update_states to determine whether there was a state change
-uint8_t sum_states(switches *sw) {
-    return (
-        sw->states.pwr + sw->states.seq + sw->states.intn + sw->states.rev + sw->states.rgb);
-}
-
-uint8_t update_states(switches *sw) {
-    // record state before update
-    uint8_t stSum = sum_states(sw);
-
-    // get current states
-    current_states(sw);
-
-    // check if state sum if different after update, return 1 if so
-    if (stSum != sum_states(sw)) {
-        return 1;
-    }
-    return 0;
 }

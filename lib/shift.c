@@ -69,7 +69,8 @@ void pulse_pin(shiftReg *sr, uint8_t clk_latch) {
 void onoff(shiftReg *sr, switches *sw, int num_sr, int on) {
     int bits = num_sr * 8;
     for (int i = 0; i < bits; i++) {
-        uint8_t interrupt = update_states(sw);
+        // uint8_t interrupt = update_states(sw);
+        uint8_t interrupt = check_state(sw);
         if (interrupt) {
             return;
         } else {
@@ -91,10 +92,9 @@ void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
     if (!rev) {
         // outer loop through number of LEDs
         for (int i = 0; i < bits; i++) {
-            // check that switch states haven't changed, exit if it has
-            uint8_t interrupt = update_states(sw);
+            uint8_t interrupt = check_state(sw);
             if (interrupt) {
-                return;
+                return; // return if state changed
             } else {
                 set_brt(); // set brightness
                 // loop forward
@@ -113,7 +113,8 @@ void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
     } else { // REVERSE
         for (int i = bits; i >= 0; i--) {
         // read current states & return if change detected
-            uint8_t interrupt = update_states(sw);
+            // uint8_t interrupt = update_states(sw);
+            uint8_t interrupt = check_state(sw);
             if (interrupt) {
                 return;
             } else {
@@ -138,7 +139,8 @@ void byte_chaser(shiftReg *sr, switches *sw, int num_sr) {
     // outer loop through number of shift registers
     for (int i = 0; i < num_sr; i++) {
         // check that switch states haven't changed, exit if it has
-        uint8_t interrupt = update_states(sw);
+        // uint8_t interrupt = update_states(sw);
+        uint8_t interrupt = check_state(sw);
         if (interrupt) {
             return;
         } else {
