@@ -36,7 +36,8 @@ int main() {
 
         if (switch_state(&sw, SW_RGB)) { // rgb switch
             rgb_on();
-            pulse(&rgb, now, 1, read_rgb_brt());
+            pulse(&rgb, now, 1, read_pot(4));
+            // pulse(&rgb, now, 1, read_rgb_brt());
         } else {
             rgb_off();   
         }

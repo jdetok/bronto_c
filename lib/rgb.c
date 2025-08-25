@@ -1,5 +1,7 @@
 #include "rgb.h"
 
+// TODO: PULSE PINK GREEN BLUE
+
 // setup pwm for rgb | red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
 void rgb_pwm(rgbLED *rgb) {
     // setup digital outputs
@@ -30,29 +32,58 @@ void rgb_off() {
 
 // enable pwm for digital pins d9/10/11 for the RGB LED
 void rgb_on() {
-    TCCR1A |= (1 << COM1A1) | (1 << COM1B1); // d9 d10
-    TCCR2A |= (1 << COM2A1); // d11
+    TCCR1A |= RED_PWM | GRN_PWM; // d9 d10
+    TCCR2A |= BLU_PWM; // d11
 }
 
 // pulse rgb with pwm
 void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
     if (time - rgb->last_update < speed_ms) return;
     rgb->last_update = time;
-
+    brt /= 2;
     // Update RGB values
-    if (rgb->r + rgb->dir_r > 255 || 
-        rgb->r + rgb->dir_r < 0) rgb->dir_r = -rgb->dir_r;
-    if (rgb->g + rgb->dir_g > 255 || 
-        rgb->g + rgb->dir_g < 0) rgb->dir_g = -rgb->dir_g;
-    if (rgb->b + rgb->dir_b > 255 || 
-        rgb->b + rgb->dir_b < 0) rgb->dir_b = -rgb->dir_b;
+    if (rgb->r + rgb->dir_r > brt || rgb->r + rgb->dir_r < 0) {
+        rgb->dir_r = -rgb->dir_r;
+    }
+    if (rgb->g + rgb->dir_g > brt || rgb->g + rgb->dir_g < 0) {
+        rgb->dir_g = -rgb->dir_g;
+    } 
+    if (rgb->b + rgb->dir_b > brt || rgb->b + rgb->dir_b < 0) {
+        rgb->dir_b = -rgb->dir_b;
+    } 
 
     rgb->r += rgb->dir_r;
-    rgb->g += rgb->dir_g;
+    // rgb->g += rgb->dir_g;
     rgb->b += rgb->dir_b;
+    TCCR1A &= ~(GRN_PWM);
+    // TCCR1A &= ~(RED_PWM);
+
 
     // set brightness
-    OCR1A = (rgb->r) / brt; // D9
-    OCR1B = (rgb->g) / brt; // D10
-    OCR2A = (rgb->b) / brt; // D11
+    OCR1A = (rgb->r) / 1.5;// / brt; // D9
+    // OCR1B = (rgb->g);// brt; // D10
+    OCR2A = (rgb->b) / 1.5;// / brt; // D11
 }
+
+// // pulse rgb with pwm
+// void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt) {
+//     if (time - rgb->last_update < speed_ms) return;
+//     rgb->last_update = time;
+
+//     // Update RGB values
+//     if (rgb->r + rgb->dir_r > 255 || 
+//         rgb->r + rgb->dir_r < 0) rgb->dir_r = -rgb->dir_r;
+//     if (rgb->g + rgb->dir_g > 255 || 
+//         rgb->g + rgb->dir_g < 0) rgb->dir_g = -rgb->dir_g;
+//     if (rgb->b + rgb->dir_b > 255 || 
+//         rgb->b + rgb->dir_b < 0) rgb->dir_b = -rgb->dir_b;
+
+//     rgb->r += rgb->dir_r;
+//     rgb->g += rgb->dir_g;
+//     rgb->b += rgb->dir_b;
+
+//     // set brightness
+//     OCR1A = (rgb->r) / brt; // D9
+//     OCR1B = (rgb->g) / brt; // D10
+//     OCR2A = (rgb->b) / brt; // D11
+// }

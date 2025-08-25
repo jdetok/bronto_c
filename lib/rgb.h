@@ -10,6 +10,11 @@
 #define GPIN (1 << PB2)
 #define BPIN (1 << PB3)
 
+// pwm enables
+#define RED_PWM (1 << COM1A1)
+#define GRN_PWM (1 << COM1B1)
+#define BLU_PWM (1 << COM2A1)
+
 typedef struct {
     uint8_t r;
     uint8_t g;

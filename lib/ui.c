@@ -86,6 +86,8 @@ uint16_t read_pot(uint8_t channel) {
     uint16_t val = ADC >> 2;
     if (val > 254) {
         return 254;
+    } else if (val <= 20) {
+        return 0;
     }
     return val;  // 10-bit result (0–1023)
 }
