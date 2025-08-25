@@ -41,6 +41,7 @@ void set_state(uint8_t *state, uint8_t pin, char reg, uint8_t bit) {
 uint8_t check_state(switches *sw) {
     uint8_t cur_state = sw->state;
 
+    // loop through switch_id enum to check state
     for (switch_id i = 0; i < SW_COUNT; i++) {
         set_state(&sw->state, sw->switches[i].pin,
             sw->switches[i].reg,

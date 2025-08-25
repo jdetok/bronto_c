@@ -18,23 +18,25 @@
 #define DIV_POT 3
 #define RGB_POT 4
 
-#define DIV_POT_SHIFT 5 // state bits 5 & 6
-#define DIV_POT_MASK (0b11 << DIV_POT_SHIFT)
-
 // return digital pin states for D and C reg
 #define DPIN_STATE(P) ((PIND & (P)) ? 1 : 0)
 #define CPIN_STATE(P) ((PINC & (P)) ? 1 : 0)
 #define PIN_STATE(REG, PIN) (((REG) & (PIN)) ? 1 : 0)
 
-// bit fields for switch state
+// bit fields for switch states
 #define PWR_BIT 0b1
 #define MOD_BIT 0b10
 #define REV_BIT 0b100
 #define DIV_BIT 0b1000
 #define RGB_BIT 0b10000
 
+// store div pot state in bits 5 & 6 (binary 3 left shifited 5 bits)
+#define DIV_POT_SHIFT 5 
+#define DIV_POT_MASK (0b11 << DIV_POT_SHIFT)
+
+// enum for switches 
 typedef enum {
-    SW_PWR = 0,
+    SW_PWR,
     SW_MOD,
     SW_REV,
     SW_DIV,
