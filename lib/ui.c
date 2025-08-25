@@ -95,16 +95,14 @@ uint16_t read_pot(uint8_t channel) {
 // passed as brt to rgb pulse() function (divide pin read by val)
 uint8_t read_rgb_brt() {
     uint16_t val = read_pot(RGB_POT);
-    if (val < 50) {
+    if (val < 20) {
         return 2;
-    } else if (val < 100) {
-        return 8;
-    } else if (val < 150) {
-        return 12;
     } else if (val < 200) {
-        return 24;
+        return 4;
+    } else if (val < 200) {
+        return 10;
     } else {
-        return 36;
+        return 30;
     }
 }
 // read intensity switch, return value will be num_sr value in chaser
