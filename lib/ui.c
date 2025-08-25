@@ -47,8 +47,20 @@ uint8_t check_state(switches *sw) {
             sw->switches[i].bit);
     }
 
+    // set 1 2 or 3 from read_div_pot to bits 5 and 6
+    uint8_t div = read_div_pot();
+    sw->state &= ~DIV_POT_MASK;
+    sw->state |= (div << DIV_POT_SHIFT);
+
+    // TODO: RGB POT STATE
+
     return (sw->state != cur_state) ? 1 : 0;
 }
+
+uint8_t get_div_pot(uint8_t state) {
+    return (state >> DIV_POT_SHIFT) & 0x03;
+}
+
 
 // setup analog pins
 void pot_init() {
@@ -76,4 +88,43 @@ uint16_t read_pot(uint8_t channel) {
         return 254;
     }
     return val;  // 10-bit result (0–1023)
+}
+
+// passed as brt to rgb pulse() function (divide pin read by val)
+uint8_t read_rgb_brt() {
+    uint16_t val = read_pot(RGB_POT);
+    if (val < 50) {
+        return 2;
+    } else if (val < 100) {
+        return 8;
+    } else if (val < 150) {
+        return 12;
+    } else if (val < 200) {
+        return 24;
+    } else {
+        return 36;
+    }
+}
+// read intensity switch, return value will be num_sr value in chaser
+uint8_t read_div_pot() {
+    uint16_t val = read_pot(DIV_POT);
+    if (val < 50) {
+        return 1;
+    } else if (val < 150) {
+        return 2;
+    } else {
+        return 3;
+    }
+}
+
+// control sr oe pin (all leds brightness) with OCR0A
+void oe_pwm() {
+    // Fast PWM, non-inverting, 8-bit
+    TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
+    TCCR0B = (1 << CS01);  // prescaler = 8
+}
+
+// set brightness for leds as analog reading of pin A1 
+void set_brt() {
+    OCR0A = read_pot(BRT_POT); // set brightness
 }

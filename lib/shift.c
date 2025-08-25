@@ -4,13 +4,13 @@
 // _delay_ms() only accepts a compile time constant
 void delay_ms_var(uint8_t ms) {
     while (ms--) {
-        _delay_ms(1);
+        _delay_us(500);
     }
 }
 
 // delay
 void del() {
-    delay_ms_var(read_pot(2)); // delaytime ms
+    delay_ms_var(read_pot(SPD_POT)); // delaytime ms
 }
 
 void shift_init(shiftReg *sr) {
@@ -27,29 +27,7 @@ void shift_init(shiftReg *sr) {
     oe_pwm(); // setup pwm channel for oe pin to control brightness
 }
 
-// read intensity switch, return value will be num_sr value in chaser
-uint8_t read_intn(uint8_t channel) {
-    uint16_t val = read_pot(channel);
-    if (val < 50) {
-        return 1;
-    } else if (val < 150) {
-        return 2;
-    } else {
-        return 3;
-    }
-}
 
-// control sr oe pin (all leds brightness) with OCR0A
-void oe_pwm() {
-    // Fast PWM, non-inverting, 8-bit
-    TCCR0A = (1 << WGM00) | (1 << WGM01) | (1 << COM0A1);
-    TCCR0B = (1 << CS01);  // prescaler = 8
-}
-
-// set brightness for leds as analog reading of pin A1 
-void set_brt() {
-    OCR0A = read_pot(1); // set brightness
-}
 
 // 0 for clock, 1 for latch
 void pulse_pin(shiftReg *sr, uint8_t clk_latch) {

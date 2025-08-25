@@ -3,8 +3,7 @@
 // setup pwm for rgb | red d9 OCR1A | green d10 OCR1B| blue d11 OCR2A
 void rgb_pwm(rgbLED *rgb) {
     // setup digital outputs
-    DDRB |= (1 << PB1) | (1 << PB2) | (1 << PB3); // d9 d10 d11
-    // DDRB |= ; // d11
+    DDRB |= RPIN | GPIN | BPIN; // d9 d10 d11
 
     // Timer1 Fast PWM 8-bit, non-inverting
     TCCR1A = (1 << WGM10) | (1 << COM1A1) | (1 << COM1B1);
@@ -20,29 +19,13 @@ void rgb_pwm(rgbLED *rgb) {
     rgb->last_update = 0;
 }
 
-// passed as brt to rgb pulse() function (divide pin read by val)
-uint8_t read_rgb_brt(uint8_t channel) {
-    uint16_t val = read_pot(channel);
-    if (val < 50) {
-        return 2;
-    } else if (val < 100) {
-        return 8;
-    } else if (val < 150) {
-        return 12;
-    } else if (val < 200) {
-        return 24;
-    } else {
-        return 36;
-    }
-}
-
 void rgb_off() {
     // disconnect from pwm
     TCCR1A &= ~((1 << COM1A1) | (1 << COM1B1)); // d9 d10
     TCCR2A &= ~(1 << COM2A1); // d11
 
     // pins low
-    PORTB &= ~((1 << PB1) | (1 << PB2) | (1 << PB3)); 
+    PORTB &= ~(RPIN | GPIN | BPIN); 
 }
 
 // enable pwm for digital pins d9/10/11 for the RGB LED

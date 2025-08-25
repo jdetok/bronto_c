@@ -12,6 +12,15 @@
 #define DIV_SW (1 << PC0) // analog pin 0 (using digital)
 #define RGB_SW (1 << PC5) // analog pin 5 (using digital)
 
+// ADC channels correlating with analog pins
+#define BRT_POT 1
+#define SPD_POT 2
+#define DIV_POT 3
+#define RGB_POT 4
+
+#define DIV_POT_SHIFT 5 // state bits 5 & 6
+#define DIV_POT_MASK (0b11 << DIV_POT_SHIFT)
+
 // return digital pin states for D and C reg
 #define DPIN_STATE(P) ((PIND & (P)) ? 1 : 0)
 #define CPIN_STATE(P) ((PINC & (P)) ? 1 : 0)
@@ -39,24 +48,21 @@ typedef struct {
     char reg;
 } switch_two_pos;
 
-// typedef struct {
-//     uint8_t pwr_sw; // d5 - on off
-//     uint8_t mod_sw; // d3 - solid on or sequence
-//     uint8_t rev_sw; // a0 (a7)
-//     uint8_t div_sw; // d2 - intensity
-//     uint8_t rgb_sw; // a5 (a7)
-//     uint8_t state; // use bitfields for state
-// } switches;
 typedef struct {
     switch_two_pos switches[5];
     uint8_t state; // use bitfields for state
 } switches;
 
 void pot_init();
+void oe_pwm();
+void set_brt();
+uint8_t get_div_pot(uint8_t state);
+uint8_t read_div_pot();
 // switches* switch_init();
 void switch_init(switches *sw);
 void set_state(uint8_t *state, uint8_t pin, char reg, uint8_t bit);
 uint8_t check_state(switches *sw);
 uint8_t switch_state(switches *sw, switch_id id);
 uint16_t read_pot(uint8_t channel);
+uint8_t read_rgb_brt();
 #endif

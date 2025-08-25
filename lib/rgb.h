@@ -4,7 +4,11 @@
 #include <stdint.h>
 #include <avr/io.h> 
 #include <util/delay.h>
-#include "ui.h"
+// #include "ui.h"
+
+#define RPIN (1 << PB1)
+#define GPIN (1 << PB2)
+#define BPIN (1 << PB3)
 
 typedef struct {
     uint8_t r;
@@ -17,7 +21,6 @@ typedef struct {
 } rgbLED;
 
 void rgb_pwm(rgbLED *rgb);
-uint8_t read_rgb_brt(uint8_t channel);
 void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
 void rgb_off();
 void rgb_on();

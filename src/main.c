@@ -36,7 +36,7 @@ int main() {
 
         if (switch_state(&sw, SW_RGB)) { // rgb switch
             rgb_on();
-            pulse(&rgb, now, 1, read_rgb_brt(4));
+            pulse(&rgb, now, 1, read_rgb_brt());
         } else {
             rgb_off();   
         }
@@ -44,7 +44,7 @@ int main() {
         if (switch_state(&sw, SW_MOD)) { // mode switch 
             if (switch_state(&sw, SW_DIV)) { // div switch        
                 // byte_chaser(&sr, &sw, 6);
-               chaser(&sr, &sw, read_intn(3), switch_state(&sw, SW_REV));
+               chaser(&sr, &sw, get_div_pot(sw.state), switch_state(&sw, SW_REV));
             } else {
                 chaser(&sr, &sw, 6, switch_state(&sw, SW_REV));
             } 
