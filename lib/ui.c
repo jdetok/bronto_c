@@ -4,11 +4,11 @@
 void switch_init(switches *sw) {
     *sw = (switches){
         .switches = {
-            {.pin = PWR_SW, .bit = PWR_BIT, .reg = 'd'},
-            {.pin = MOD_SW, .bit = MOD_BIT, .reg = 'd'},
-            {.pin = REV_SW, .bit = REV_BIT, .reg = 'd'},
-            {.pin = DIV_SW, .bit = DIV_BIT, .reg = 'c'},
-            {.pin = RGB_SW, .bit = RGB_BIT, .reg = 'c'},
+            {.pin = PWR_PIN, .bit = PWR_BIT, .reg = 'd'},
+            {.pin = SEQ_PIN, .bit = SEQ_BIT, .reg = 'd'},
+            {.pin = REV_PIN, .bit = REV_BIT, .reg = 'd'},
+            {.pin = MOD_PIN, .bit = MOD_BIT, .reg = 'c'},
+            {.pin = RGB_PIN, .bit = RGB_BIT, .reg = 'c'},
         },
         .state = 0
     };
@@ -49,17 +49,17 @@ uint8_t check_state(switches *sw) {
     }
 
     // set 1 2 or 3 from read_div_pot to bits 5 and 6
-    uint8_t div = read_div_pot();
-    sw->state &= ~DIV_POT_MASK;
-    sw->state |= (div << DIV_POT_SHIFT);
+    uint8_t mod = read_mod_pot();
+    sw->state &= ~MOD_POT_MASK;
+    sw->state |= (mod << MOD_POT_SHIFT);
 
     // TODO: RGB POT STATE
 
     return (sw->state != cur_state) ? 1 : 0;
 }
 
-uint8_t get_div_pot(uint8_t state) {
-    return (state >> DIV_POT_SHIFT) & 0x03;
+uint8_t get_mod_pot(uint8_t state) {
+    return (state >> MOD_POT_SHIFT) & 0x03;
 }
 
 
@@ -107,14 +107,14 @@ uint8_t read_rgb_brt() {
     }
 }
 // read intensity switch, return value will be num_sr value in chaser
-uint8_t read_div_pot() {
-    uint16_t val = read_pot(DIV_POT);
+uint8_t read_mod_pot() {
+    uint16_t val = read_pot(MOD_POT);
     if (val < 50) {
-        return 1;
+        return 3;
     } else if (val < 150) {
         return 2;
     } else {
-        return 3;
+        return 1;
     }
 }
 

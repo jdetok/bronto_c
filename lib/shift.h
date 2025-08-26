@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include "ui.h"
 
+#define NUM_SR 6
+
 // digital pins for shift register
 #define SER (1 << PD4)
 #define OE (1 << PD6)
@@ -25,6 +27,7 @@ void shift_init(shiftReg *sr);
 void delay_ms_var(uint8_t ms);
 void onoff(shiftReg *sr, switches *sw, int num_sr, int on);  
 void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev);
-void byte_chaser(shiftReg *sr, switches *sw, int num_sr);
+void byte_chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev);
+void mode_selector(shiftReg *sr, switches *sw, uint8_t mode);
 
 #endif

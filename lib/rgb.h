@@ -4,8 +4,8 @@
 #include <stdint.h>
 #include <avr/io.h> 
 #include <util/delay.h>
-// #include "ui.h"
 
+// digital pins for rgb
 #define RPIN (1 << PB1)
 #define GPIN (1 << PB2)
 #define BPIN (1 << PB3)

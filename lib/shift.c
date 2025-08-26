@@ -1,10 +1,26 @@
 #include "shift.h"
 
+
+void mode_selector(shiftReg *sr, switches *sw, uint8_t mode) {
+    switch (mode) {
+    case 1:
+        chaser(sr, sw, 2, switch_state(sw, REV_SW));
+        break;
+    case 2:
+        chaser(sr, sw, 3, switch_state(sw, REV_SW));
+        break;
+    case 3:
+        byte_chaser(sr, sw, NUM_SR, switch_state(sw, REV_SW));        
+        break;
+    }
+    
+}
+
 // required to accept delay time as a variable from pot
 // _delay_ms() only accepts a compile time constant
 void delay_ms_var(uint8_t ms) {
     while (ms--) {
-        _delay_us(500);
+        _delay_us(800);
     }
 }
 
@@ -64,41 +80,61 @@ void onoff(shiftReg *sr, switches *sw, int num_sr, int on) {
     pulse_pin(sr, 1); // pulse latch
 }
 
+// optimized chaser func
 void chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
     uint8_t bits = num_sr * 8;
-    uint8_t start, end, step;
-
-    if (!rev) {
-        start = 0;
-        end = bits;
-        step = 1;
-    } else {
-        start = (bits - 1);
-        end = -1;
-        step = -1;
-    }
-    
-    for (uint8_t i = start; i != end; i += step) {
+    uint64_t bitmask = rev ? (1ULL << (bits - 1)) : 1ULL;
+    for (uint64_t i = 0; i < bits; i++) {
         uint8_t interrupt = check_state(sw);
         if (interrupt) {
             return; // return if state changed
         } else {
             set_brt(); // set brightness
-            // loop forward
             for (int b = (bits - 1); b >= 0; b--) {
-                if (b == i) { // when current bit position (b) is same as current led (i), send a 1 to serial pin
-                    PORTD |= sr->ser; // write a 1
+                if (bitmask & (1ULL << b)) {
+                    PORTD |= sr->ser;
                 } else {
-                    PORTD &= ~sr->ser; // write a 0
+                    PORTD &= ~sr->ser;
                 }
-                pulse_pin(sr, 0); // shift clock
+                pulse_pin(sr, 0);
             }
         }
-        pulse_pin(sr, 1); // shift latch
-        del(); // delay
-    }
+        pulse_pin(sr, 1);
+        del();
+        bitmask = rev ? (bitmask >> 1) : (bitmask << 1);
+    } 
 }
 
+void byte_chaser(shiftReg *sr, switches *sw, int num_sr, uint8_t rev) {
+    uint8_t bits = num_sr * 8;
+    uint64_t bitmask = rev ? (0xFFULL << (bits - 8)) : 0xFFULL;
+    
+    // outer loop through number of shift registers
+    for (int i = 0; i < num_sr; i++) {
+        // check that switch states haven't changed, exit if it has
+        uint8_t interrupt = check_state(sw);
+        if (interrupt) {
+            return;
+        } else {
+            set_brt(); // set brightness
+            uint64_t temp = bitmask;
+            for (int b = 0; b < bits; b++) {
+                if (temp & 1ULL) {
+                    PORTD |= sr->ser;  // write 1
+                } else {
+                    PORTD &= ~sr->ser; // write 0
+                }
+                pulse_pin(sr, 0);      // shift clock
+                temp >>= 1;             // move next bit into LSB
+            }
+        }
+        pulse_pin(sr, 1); // shift latchs
+        del(); // delay
+        bitmask = rev ? (bitmask >> 8ULL) : (bitmask << 8ULL);
+        // bitmask <<= 8ULL;/
+    }
+}
+/*
 void byte_chaser(shiftReg *sr, switches *sw, int num_sr) {
     uint8_t bits = num_sr * 8;
     // outer loop through number of shift registers
@@ -121,4 +157,4 @@ void byte_chaser(shiftReg *sr, switches *sw, int num_sr) {
         pulse_pin(sr, 1); // shift latchs
         del(); // delay
     }
-}
+}*/
