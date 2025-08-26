@@ -1,6 +1,5 @@
 #include "shift.h"
 
-
 void mode_selector(shiftReg *sr, switches *sw, uint8_t mode) {
     switch (mode) {
     case 1:
@@ -27,6 +26,11 @@ void delay_ms_var(uint8_t ms) {
 // delay
 void del() {
     delay_ms_var(read_pot(SPD_POT)); // delaytime ms
+}
+
+// set brightness for leds as analog reading of pin A1 
+void set_brt() {
+    OCR0A = read_pot(BRT_POT); // set brightness
 }
 
 void shift_init(shiftReg *sr) {

@@ -10,7 +10,7 @@
 #define GPIN (1 << PB2)
 #define BPIN (1 << PB3)
 
-// pwm enables
+// pwm enable channels
 #define RED_PWM (1 << COM1A1)
 #define GRN_PWM (1 << COM1B1)
 #define BLU_PWM (1 << COM2A1)
@@ -26,8 +26,8 @@ typedef struct {
 } rgbLED;
 
 void rgb_pwm(rgbLED *rgb);
-void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
 void rgb_off();
 void rgb_on();
+void pulse(rgbLED *rgb, uint32_t time, uint32_t speed_ms, uint8_t brt);
 
 #endif

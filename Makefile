@@ -5,7 +5,7 @@ OBJCOPY = avr-objcopy
 CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Os
 PORT = /dev/cu.usbserial-110
 
-SRC = $(wildcard src/*.c lib/*.c)
+SRC = $(wildcard src/*.c lib/*.c lib/**/*.c)
 OBJ = $(SRC:.c=.o)
 
 TARGET = bld/main
@@ -22,4 +22,4 @@ upload: $(TARGET).hex
 	avrdude -c arduino -p m328p -P $(PORT) -b 115200 -U flash:w:$<:i
 
 clean:
-	rm -f src/*.o lib/*.o bld/*
+	rm -f src/*.o lib/**/*.o lib/*.o

@@ -11,3 +11,8 @@ the circuit includes 5 2-way switches and 4 potentiometers. the readings of thes
 - the brightness and speed pots are not stored as state - these use the PWM channels to get the reading & set the appropriate brightness/speed
 - the 'div' pot uses the analog reading to pass different values to the `num_sr` parameter in the `chaser` function. this modifies the number of lights lit at once
     - the function that reads this pot returns a 1, 2, or 3. its value is stored as state in `BITS 5 and 6` of the state byte
+### updating state
+- state is updated as frequently as possible
+    - in `chaser` functions, this update takes place within the for loop
+    - this effectively ensures state is captured with the display of each bit, or with each individual light that turns on
+    

@@ -57,16 +57,15 @@ typedef struct {
     uint8_t state; // use bitfields for state
 } switches;
 
-void pot_init();
-void oe_pwm();
-void set_brt();
-uint8_t get_mod_pot(uint8_t state);
-uint8_t read_mod_pot();
-// switches* switch_init();
-void switch_init(switches *sw);
-void set_state(uint8_t *state, uint8_t pin, char reg, uint8_t bit);
+void pot_init(); // setup potentiometers to utilize PWM
+void oe_pwm(); // setup PWM channels
+void switch_init(switches *sw); // setup switches
+void set_state(uint8_t *state, uint8_t pin, char reg, uint8_t bit); // set bit
 uint8_t check_state(switches *sw);
 uint8_t switch_state(switches *sw, switch_id id);
-uint16_t read_pot(uint8_t channel);
-uint8_t read_rgb_brt();
+uint8_t read_pot(uint8_t channel); // returns 0 - 244
+uint8_t read_mod_pot(); // writes 1-3 to bits 5-6 in state byte
+uint8_t get_mod_pot(uint8_t state); // gets bits 5-6 for mode_selector (shift.h)
+uint8_t read_rgb_brt(); // returns brightness divider for rgb pulse func
+
 #endif

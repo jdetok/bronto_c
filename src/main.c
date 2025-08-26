@@ -1,7 +1,7 @@
 #include <avr/io.h> 
 #include <util/delay.h>
 #include "../lib/shift.h"
-#include "../lib/ui.h"
+#include "../lib/ui/ui.h"
 #include "../lib/rgb.h"
 
 int main() {
